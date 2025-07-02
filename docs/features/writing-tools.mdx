@@ -1,0 +1,49 @@
+---
+title: "Writing Tools"
+description: "Overview of the special tools and modes available for writers."
+---
+
+Cline includes several tools designed specifically for long-form writing projects. Below are the most common ones and examples of how to use them.
+
+## Outline Mode
+
+Use Outline mode to plan the structure of a novel, paper, or script before drafting.
+
+```text
+/newtask mode:outline
+```
+
+Cline will prompt you for a high-level summary and then generate a chapter or scene breakdown.
+
+## Draft Mode
+
+Draft mode lets Cline expand sections of your outline into full prose. Provide the outline file or paragraph you want to develop and Cline will keep the structure intact.
+
+```text
+/draft @/outline.md section:2
+```
+
+This command asks Cline to focus on the second section of your outline.
+
+## Reference Manager
+
+The `reference_lookup` tool fetches citations for academic writing. Provide a DOI or URL and Cline will insert a formatted reference.
+
+```xml
+<reference_lookup>
+<url>https://doi.org/10.1000/example</url>
+<style>APA</style>
+</reference_lookup>
+```
+
+## Screenplay Formatter
+
+When working on a script, use the `format_screenplay` tool to ensure that scenes follow standard screenplay conventions.
+
+```xml
+<format_screenplay>
+<path>scenes/scene1.md</path>
+</format_screenplay>
+```
+
+These tools combined with Plan and Draft modes help you manage large writing projects from outline to finished manuscript.

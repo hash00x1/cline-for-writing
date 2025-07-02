@@ -3,7 +3,7 @@ title: "Commands & Shortcuts Overview"
 sidebarTitle: "Overview"
 ---
 
-Cline integrates directly into VSCode's interface, letting you access AI assistance without disrupting your workflow. These integrations appear as commands in context menus, keyboard shortcuts, and quick fixes throughout the editor.
+Cline integrates directly into VSCode's interface, letting you access AI writing assistance without leaving your document. These integrations appear as commands in context menus, keyboard shortcuts, and quick fixes throughout the editor.
 
 <Frame>
 	<img
@@ -14,42 +14,38 @@ Cline integrates directly into VSCode's interface, letting you access AI assista
 
 ### What are Editor Integrations?
 
-Editor integrations are commands and shortcuts that let you use Cline right where you're working. Instead of switching to the Cline panel first, you can select code, right-click, and immediately send it to Cline for help.
+Editor integrations let you use Cline right where you're writing. Instead of copying and pasting passages into chat, you can highlight text, right-click, and ask Cline to outline, edit, or summarize.
 These integrations appear in different places throughout VSCode:
 
--   In the editor context menu (right-click menu) - "Add to Cline"
--   In the terminal context menu - "Add to Cline"
--   In the Source Control view - "Generate Commit Message"
+-   In the editor context menu (right-click menu) - "Send to Cline"
 -   As keyboard shortcuts - Various Cline commands
--   As Quick Fix options (lightbulb menu) - "Fix with Cline", "Explain with Cline", "Improve with Cline"
+-   As Quick Fix options (lightbulb menu) - "Rewrite with Cline", "Summarize with Cline"
 
 ### Available Editor Integrations
 
 Cline offers several editor integrations, each designed to enhance different aspects of your development workflow:
 
 <Columns cols={2}>
-  <Card title="Code Commands" icon="code" href="/features/commands-and-shortcuts/code-commands">
-    Right-click on code to add it to Cline, or use the lightbulb menu to fix errors, explain code, or improve it. Cline sees the complete code context, including imports and surrounding functions.
+  <Card title="Text Commands" icon="file-lines" href="/features/commands-and-shortcuts/code-commands">
+    Highlight a paragraph and ask Cline to rewrite, summarize, or expand it. Cline keeps the surrounding context so edits fit naturally.
   </Card>
 
 {" "}
 
-<Card title="Terminal Integration" icon="terminal" href="/features/commands-and-shortcuts/terminal-integration">
-	Add terminal output to Cline with a right-click or use `@terminal` mentions. Perfect for debugging build errors, test
-	failures, or runtime issues.
+<Card title="Research Links" icon="book" href="/features/commands-and-shortcuts/terminal-integration">
+        Right-click a citation or URL to fetch references for you. Great for academic writing or gathering background material.
 </Card>
 
 {" "}
 
-<Card title="Git Integration" icon="code-branch" href="/features/commands-and-shortcuts/git-integration">
-	Generate commit messages, explain diffs, or analyze changes with Cline's Git integration. Cline understands your version
-	control context.
+<Card title="Version History" icon="clock" href="/features/commands-and-shortcuts/git-integration">
+        Track revisions of your manuscript and ask Cline to summarize changes between drafts.
 </Card>
 
 {" "}
 
 <Card title="Keyboard Shortcuts" icon="keyboard" href="/features/commands-and-shortcuts/keyboard-shortcuts">
-	Speed up your workflow with keyboard shortcuts for common Cline actions. Quickly add code to chat, fix errors, or improve your code.
+        Speed up your workflow with shortcuts for outlining, drafting, and revising text.
 </Card>
 </Columns>
 
@@ -57,7 +53,7 @@ Cline offers several editor integrations, each designed to enhance different asp
 
 When you use these commands, Cline:
 
--   Captures the relevant context (selected code, file path, terminal output, etc.)
+-   Captures the relevant context (selected text, file path, or reference)
 -   Focuses the Cline interface
 -   Creates a conversation with the captured context
 -   In some cases, automatically generates a suggested prompt
