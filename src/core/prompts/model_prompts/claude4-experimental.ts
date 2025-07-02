@@ -25,6 +25,8 @@ import { attemptCompletionToolDefinition } from "@core/tools/attemptCompletionTo
 import { browserActionToolDefinition } from "@core/tools/browserActionTool"
 import { newTaskToolDefinition } from "@core/tools/newTaskTool"
 import { editToolDefinition } from "@/core/tools/editTool"
+import { createOutlineToolDefinition } from "@core/prompts/createOutlineTool"
+import { insertCitationToolDefinition } from "@core/prompts/insertCitationTool"
 
 export const SYSTEM_PROMPT_CLAUDE4_EXPERIMENTAL = async (
 	cwd: string,
@@ -334,10 +336,12 @@ You accomplish a given task iteratively, breaking it down into clear steps and w
 		listCodeDefinitionNamesTool,
 		useMCPToolDefinition,
 		accessMcpResourceToolDefinition,
-		loadMcpDocumentationTool,
-		newTaskToolDefinition,
-		editToolDefinition,
-	]
+                loadMcpDocumentationTool,
+                newTaskToolDefinition,
+                editToolDefinition,
+                createOutlineToolDefinition,
+                insertCitationToolDefinition,
+        ]
 	if (supportsBrowserUse) {
 		tools.push(browserActionTool)
 	}
