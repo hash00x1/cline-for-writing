@@ -57,6 +57,7 @@ import { DEFAULT_LANGUAGE_SETTINGS, getLanguageKey, LanguageDisplay } from "@sha
 import { ClineAskResponse, ClineCheckpointRestore } from "@shared/WebviewMessage"
 import { calculateApiCostAnthropic } from "@utils/cost"
 import { fileExistsAtPath } from "@utils/fs"
+import fs from "fs/promises"
 import { createAndOpenGitHubIssue } from "@utils/github-url-utils"
 import { arePathsEqual, getReadablePath, isLocatedInWorkspace } from "@utils/path"
 import { fixModelHtmlEscaping, removeInvalidChars } from "@utils/string"
@@ -1624,18 +1625,28 @@ export class Task {
 				case "read_file":
 				case "list_files":
 				case "list_code_definition_names":
-				case "search_files":
-					return [
-						this.autoApprovalSettings.actions.readFiles,
-						this.autoApprovalSettings.actions.readFilesExternally ?? false,
-					]
-				case "new_rule":
-				case "write_to_file":
-				case "replace_in_file":
-					return [
-						this.autoApprovalSettings.actions.editFiles,
-						this.autoApprovalSettings.actions.editFilesExternally ?? false,
-					]
+                                case "search_files":
+                                        return [
+                                                this.autoApprovalSettings.actions.readFiles,
+                                                this.autoApprovalSettings.actions.readFilesExternally ?? false,
+                                        ]
+                                case "create_outline":
+                                        return [
+                                                this.autoApprovalSettings.actions.readFiles,
+                                                this.autoApprovalSettings.actions.readFilesExternally ?? false,
+                                        ]
+                                case "new_rule":
+                                case "write_to_file":
+                                case "replace_in_file":
+                                        return [
+                                                this.autoApprovalSettings.actions.editFiles,
+                                                this.autoApprovalSettings.actions.editFilesExternally ?? false,
+                                        ]
+                                case "insert_citation":
+                                        return [
+                                                this.autoApprovalSettings.actions.editFiles,
+                                                this.autoApprovalSettings.actions.editFilesExternally ?? false,
+                                        ]
 				case "execute_command":
 					return [
 						this.autoApprovalSettings.actions.executeSafeCommands ?? false,
@@ -2170,10 +2181,14 @@ export class Task {
 							return `[${block.name}]`
 						case "new_rule":
 							return `[${block.name} for '${block.params.path}']`
-						case "web_fetch":
-							return `[${block.name} for '${block.params.url}']`
-					}
-				}
+                                                case "web_fetch":
+                                                        return `[${block.name} for '${block.params.url}']`
+                                                case "create_outline":
+                                                        return `[${block.name} for '${block.params.path}']`
+                                                case "insert_citation":
+                                                        return `[${block.name} for '${block.params.path}']`
+                                        }
+                                }
 
 				if (this.didRejectTool) {
 					// ignore any tool content after user has rejected tool once
@@ -2768,17 +2783,95 @@ export class Task {
 								// Track file read operation
 								await this.fileContextTracker.trackFileContext(relPath, "read_tool")
 
-								pushToolResult(content)
-								await this.saveCheckpoint()
-								break
-							}
-						} catch (error) {
-							await handleError("reading file", error)
-							await this.saveCheckpoint()
-							break
-						}
-					}
-					case "list_files": {
+                                                                pushToolResult(content)
+                                                                await this.saveCheckpoint()
+                                                                break
+                                                        }
+                                                } catch (error) {
+                                                        await handleError("reading file", error)
+                                                        await this.saveCheckpoint()
+                                                        break
+                                                }
+                                        }
+                                        case "create_outline": {
+                                                const relPath: string | undefined = block.params.path
+                                                try {
+                                                        if (!relPath) {
+                                                                this.consecutiveMistakeCount++
+                                                                pushToolResult(await this.sayAndCreateMissingParamError("create_outline", "path"))
+                                                                await this.saveCheckpoint()
+                                                                break
+                                                        }
+
+                                                        const accessAllowed = this.clineIgnoreController.validateAccess(relPath)
+                                                        if (!accessAllowed) {
+                                                                await this.say("clineignore_error", relPath)
+                                                                pushToolResult(formatResponse.toolError(formatResponse.clineIgnoreError(relPath)))
+                                                                await this.saveCheckpoint()
+                                                                break
+                                                        }
+
+                                                        const absolutePath = path.resolve(cwd, relPath)
+                                                        const fileText = await extractTextFromFile(absolutePath)
+                                                        const outline = fileText
+                                                                .split(/\r?\n/)
+                                                                .filter((l) => l.trim().match(/^#|\\\w*section\{|^\\\\section/))
+                                                                .map((l) => `- ${l.replace(/[#{}]/g, "").trim()}`)
+                                                                .join("\n")
+
+                                                        await this.fileContextTracker.trackFileContext(relPath, "read_tool")
+
+                                                        pushToolResult(outline || "No headings found.")
+                                                        await this.saveCheckpoint()
+                                                        break
+                                                } catch (error) {
+                                                        await handleError("creating outline", error)
+                                                        await this.saveCheckpoint()
+                                                        break
+                                                }
+                                        }
+                                        case "insert_citation": {
+                                                const relPath: string | undefined = block.params.path
+                                                const citation: string | undefined = block.params.citation
+                                                const marker: string | undefined = block.params.marker
+                                                try {
+                                                        if (!relPath || !citation || !marker) {
+                                                                this.consecutiveMistakeCount++
+                                                                let missing = !relPath ? "path" : !citation ? "citation" : "marker"
+                                                                pushToolResult(await this.sayAndCreateMissingParamError("insert_citation", missing))
+                                                                await this.saveCheckpoint()
+                                                                break
+                                                        }
+
+                                                        const accessAllowed = this.clineIgnoreController.validateAccess(relPath)
+                                                        if (!accessAllowed) {
+                                                                await this.say("clineignore_error", relPath)
+                                                                pushToolResult(formatResponse.toolError(formatResponse.clineIgnoreError(relPath)))
+                                                                await this.saveCheckpoint()
+                                                                break
+                                                        }
+
+                                                        const absolutePath = path.resolve(cwd, relPath)
+                                                        let text = await fs.readFile(absolutePath, "utf8")
+                                                        const idx = text.indexOf(marker)
+                                                        if (idx === -1) {
+                                                                pushToolResult(formatResponse.toolError(`Marker not found in ${relPath}`))
+                                                                await this.saveCheckpoint()
+                                                                break
+                                                        }
+                                                        text = text.slice(0, idx + marker.length) + citation + text.slice(idx + marker.length)
+                                                        await fs.writeFile(absolutePath, text)
+                                                        this.fileContextTracker.markFileAsEditedByCline(relPath)
+                                                        pushToolResult(`Citation inserted into ${relPath}`)
+                                                        await this.saveCheckpoint()
+                                                        break
+                                                } catch (error) {
+                                                        await handleError("inserting citation", error)
+                                                        await this.saveCheckpoint()
+                                                        break
+                                                }
+                                        }
+                                        case "list_files": {
 						const isClaude4Model = isClaude4ModelFamily(this.api)
 						const relDirPath: string | undefined = block.params.path
 						const recursiveRaw: string | undefined = block.params.recursive
