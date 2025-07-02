@@ -1,9 +1,9 @@
 export type OpenAIReasoningEffort = "low" | "medium" | "high"
 
 export interface ChatSettings {
-	mode: "plan" | "act"
-	preferredLanguage?: string
-	openAIReasoningEffort?: OpenAIReasoningEffort
+        mode: "plan" | "act" | "research" | "write"
+        preferredLanguage?: string
+        openAIReasoningEffort?: OpenAIReasoningEffort
 }
 
 export type PartialChatSettings = Partial<ChatSettings>
