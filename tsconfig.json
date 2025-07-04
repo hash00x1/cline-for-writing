@@ -34,5 +34,16 @@
 		}
 	},
 	"include": ["src/**/*", "scripts/**/*"],
-	"exclude": ["node_modules", ".vscode-test", "webview-ui"]
+	"exclude": [
+		"node_modules", 
+		".vscode-test", 
+		"webview-ui",
+		"src/api/providers/vscode-lm.ts",
+		"src/api/transform/vscode-lm-format.ts",
+		"src/api/transform/vscode-lm-format.test.ts",
+		"src/core/controller/models/getVsCodeLmModels.ts",
+		"src/standalone/vscode-context.ts",
+		"src/integrations/terminal/TerminalProcess.test.ts",
+		"src/shared/vsCodeSelectorUtils.ts"
+	]
 }

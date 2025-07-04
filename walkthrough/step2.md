@@ -1,7 +1,7 @@
-# Deep Codebase Intelligence
+# Deep Project Understanding
 
-**Cline starts with broad context and explores deeply where needed.**
+**Cline Writer starts with broad context from your memory_bank and explores your writing project thoroughly.**
 
-Cline is designed with inherent codebase intelligence. It doesn't operate in a vacuum, but starts with a structural understanding of your project. Before making changes, it performs targeted agentic exploration to gain any additional specific context required, ensuring its actions are always well-informed and aligned with your architecture.
+Cline Writer is designed with inherent project intelligence for writing workflows. It doesn't operate in isolation, but starts with a comprehensive understanding of your writing project by analyzing your `memory_bank` folder. Before making suggestions or drafting content, it performs targeted exploration of your outlines, research notes, character profiles, and existing drafts, ensuring its writing assistance is always well-informed and aligned with your project goals.
 
-![Cline Deep Codebase Intelligence Demo](https://storage.googleapis.com/cline_public_images/docs/assets/cline-reading-codebase-hifi-2_compress.webp)
+![Cline Writer Project Intelligence Demo](https://storage.googleapis.com/cline_public_images/docs/assets/cline-reading-codebase-hifi-2_compress.webp)

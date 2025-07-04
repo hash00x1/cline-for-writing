@@ -1,4 +1,4 @@
-# Cline
+# Cline Writer
 
 <p align="center">
     <img src="https://media.githubusercontent.com/media/cline/cline/main/assets/docs/demo.gif" width="100%" />
@@ -26,7 +26,7 @@
 </table>
 </div>
 
-认识 Cline —— 一个可以使用你的 **终端** 和 **编辑器** 的 AI 助手。
+认识 Cline Writer —— 专为专业作家设计的AI写作助手，专精于学术研究、剧本创作和小说写作。
 
 得益于 [Claude 4 Sonnet 的代理式编码能力](https://www.anthropic.com/claude/sonnet)，Cline 能够逐步处理复杂的软件开发任务。借助于一系列工具，他可以创建和编辑文件、浏览大型项目、使用浏览器，并在你授权后执行终端命令，从而在代码补全或技术支持之外提供更深入的帮助。Cline 甚至还能使用 Model Context Protocol（MCP）来创建新工具，并扩展自身的能力。虽然传统的自动化 AI 脚本通常运行在沙盒环境中，但这个扩展提供了一个人类参与审核的图形界面（GUI），用于审批每一次文件变更和终端命令，从而为探索代理式 AI 的潜力提供了一种安全且易于使用的方式。
 

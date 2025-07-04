@@ -5,6 +5,12 @@ import tailwindcss from "@tailwindcss/vite"
 import react from "@vitejs/plugin-react-swc"
 import { resolve } from "path"
 import { writeFileSync } from "node:fs"
+import { webcrypto } from "node:crypto"
+
+// Polyfill crypto.getRandomValues for Node.js 18 compatibility
+if (!globalThis.crypto) {
+	globalThis.crypto = webcrypto as any
+}
 
 // Custom plugin to write the server port to a file
 const writePortToFile = (): Plugin => {
@@ -76,6 +82,7 @@ export default defineConfig({
 			IS_DEV: JSON.stringify(process.env.IS_DEV),
 			IS_TEST: JSON.stringify(process.env.IS_TEST),
 		},
+		global: "globalThis",
 	},
 	resolve: {
 		alias: {
@@ -84,6 +91,14 @@ export default defineConfig({
 			"@context": resolve(__dirname, "./src/context"),
 			"@shared": resolve(__dirname, "../src/shared"),
 			"@utils": resolve(__dirname, "./src/utils"),
+		},
+	},
+	optimizeDeps: {
+		include: [],
+		esbuildOptions: {
+			define: {
+				global: "globalThis",
+			},
 		},
 	},
 })

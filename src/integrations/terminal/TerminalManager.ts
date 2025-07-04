@@ -63,32 +63,15 @@ Resources:
 */
 
 /*
-The new shellIntegration API gives us access to terminal command execution output handling.
+The shellIntegration API gives us access to terminal command execution output handling.
 However, we don't update our VSCode type definitions or engine requirements to maintain compatibility
 with older VSCode versions. Users on older versions will automatically fall back to using sendText
 for terminal command execution.
 Interestingly, some environments like Cursor enable these APIs even without the latest VSCode engine.
 This approach allows us to leverage advanced features when available while ensuring broad compatibility.
+
+The shellIntegration types are now included in the standard VSCode types, so we don't need to redeclare them.
 */
-declare module "vscode" {
-	// https://github.com/microsoft/vscode/blob/f0417069c62e20f3667506f4b7e53ca0004b4e3e/src/vscode-dts/vscode.d.ts#L7442
-	interface Terminal {
-		shellIntegration?: {
-			cwd?: vscode.Uri
-			executeCommand?: (command: string) => {
-				read: () => AsyncIterable<string>
-			}
-		}
-	}
-	// https://github.com/microsoft/vscode/blob/f0417069c62e20f3667506f4b7e53ca0004b4e3e/src/vscode-dts/vscode.d.ts#L10794
-	interface Window {
-		onDidStartTerminalShellExecution?: (
-			listener: (e: any) => any,
-			thisArgs?: any,
-			disposables?: vscode.Disposable[],
-		) => vscode.Disposable
-	}
-}
 
 export class TerminalManager {
 	private terminalIds: Set<number> = new Set()
@@ -102,10 +85,13 @@ export class TerminalManager {
 	constructor() {
 		let disposable: vscode.Disposable | undefined
 		try {
-			disposable = (vscode.window as vscode.Window).onDidStartTerminalShellExecution?.(async (e) => {
-				// Creating a read stream here results in a more consistent output. This is most obvious when running the `date` command.
-				e?.execution?.read()
-			})
+			// Check if the terminal shell execution API is available
+			if ('onDidStartTerminalShellExecution' in vscode.window) {
+				disposable = (vscode.window as any).onDidStartTerminalShellExecution(async (e: any) => {
+					// Creating a read stream here results in a more consistent output. This is most obvious when running the `date` command.
+					e?.execution?.read()
+				})
+			}
 		} catch (error) {
 			// console.error("Error setting up onDidEndTerminalShellExecution", error)
 		}
@@ -145,7 +131,7 @@ export class TerminalManager {
 			return false
 		}
 
-		const currentCwd = terminalInfo.terminal.shellIntegration?.cwd?.fsPath
+		const currentCwd = (terminalInfo.terminal as any).shellIntegration?.cwd?.fsPath
 		const targetCwd = vscode.Uri.file(terminalInfo.pendingCwdChange).fsPath
 
 		if (!currentCwd) {
@@ -189,7 +175,7 @@ export class TerminalManager {
 		})
 
 		// if shell integration is already active, run the command immediately
-		if (terminalInfo.terminal.shellIntegration) {
+		if ((terminalInfo.terminal as any).shellIntegration) {
 			process.waitForShellIntegration = false
 			process.run(terminalInfo.terminal, command)
 		} else {
@@ -197,7 +183,7 @@ export class TerminalManager {
 			console.log(
 				`[TerminalManager Test] Waiting for shell integration for terminal ${terminalInfo.id} with timeout ${this.shellIntegrationTimeout}ms`,
 			)
-			pWaitFor(() => terminalInfo.terminal.shellIntegration !== undefined, {
+			pWaitFor(() => (terminalInfo.terminal as any).shellIntegration !== undefined, {
 				timeout: this.shellIntegrationTimeout,
 			})
 				.then(() => {
@@ -241,7 +227,7 @@ export class TerminalManager {
 			if (t.shellPath !== expectedShellPath) {
 				return false
 			}
-			const terminalCwd = t.terminal.shellIntegration?.cwd // one of cline's commands could have changed the cwd of the terminal
+			const terminalCwd = (t.terminal as any).shellIntegration?.cwd // one of cline's commands could have changed the cwd of the terminal
 			if (!terminalCwd) {
 				console.log(`[TerminalManager] Terminal ${t.id} has no cwd, skipping`)
 				return false

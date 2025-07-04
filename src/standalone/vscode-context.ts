@@ -2,7 +2,7 @@ import { URI } from "vscode-uri"
 
 import { mkdirSync, readFileSync } from "fs"
 import path, { join } from "path"
-import type { Extension, ExtensionContext } from "vscode"
+import type { Extension, ExtensionContext, LanguageModelAccessInformation, LanguageModelChat, Event } from "vscode"
 import { ExtensionKind, ExtensionMode } from "vscode"
 import { log } from "./utils"
 import { outputChannel, postMessage } from "./vscode-context-stubs"
@@ -34,6 +34,21 @@ const extension: Extension<void> = {
 	extensionKind: ExtensionKind.UI,
 }
 
+// Mock implementation of LanguageModelAccessInformation for standalone mode
+const mockLanguageModelAccessInformation: LanguageModelAccessInformation = {
+	onDidChange: (listener: (e: void) => any, thisArgs?: any, disposables?: any[]): any => {
+		// Mock Event implementation - return a disposable that does nothing
+		return {
+			dispose: () => {}
+		}
+	},
+	canSendRequest: (chat: LanguageModelChat): boolean | undefined => {
+		// In standalone mode, we'll return undefined to indicate that consent hasn't been asked for
+		// This matches the behavior described in the VSCode API documentation
+		return undefined
+	}
+}
+
 const extensionContext: ExtensionContext = {
 	extension: extension,
 	extensionMode: EXTENSION_MODE,
@@ -61,6 +76,9 @@ const extensionContext: ExtensionContext = {
 
 	// TODO(sjf): Workspace state needs to be per project/workspace.
 	workspaceState: new MementoStore(path.join(DATA_DIR, "workspaceState.json")),
+
+	// Add the required languageModelAccessInformation property
+	languageModelAccessInformation: mockLanguageModelAccessInformation,
 }
 
 function getPackageVersion(): string {

@@ -1,4 +1,4 @@
-# Cline
+# Cline Writer
 
 <p align="center">
     <img src="https://media.githubusercontent.com/media/cline/cline/main/assets/docs/demo.gif" width="100%" />
@@ -26,7 +26,7 @@
 </table>
 </div>
 
-Clineは、**CLI**と**エディター**を使用できるAIアシスタントです。
+Cline Writerは、学術研究、脚本執筆、小説執筆を専門とするプロフェッショナルライター向けのAI執筆アシスタントです。
 
 [Claude 4 Sonnetのエージェント的コーディング機能](https://www.anthropic.com/claude/sonnet)のおかげで、Clineは複雑なソフトウェア開発タスクをステップバイステップで処理できます。ファイルの作成と編集、大規模プロジェクトの探索、ブラウザの使用、ターミナルコマンドの実行（許可後）などのツールを使用して、コード補完や技術サポートを超えた支援を提供します。Clineは、Model Context Protocol (MCP)を使用して新しいツールを作成し、自身の機能を拡張することもできます。自律的なAIスクリプトは通常サンドボックス環境で実行されますが、この拡張機能はファイル変更やターミナルコマンドを承認するための人間インターフェースを提供し、エージェント的AIの可能性を安全かつアクセスしやすい方法で探求できます。
 

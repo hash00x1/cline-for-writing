@@ -1,4 +1,4 @@
-# Cline
+# Cline Writer
 
 <p align="center">
     <img src="https://media.githubusercontent.com/media/cline/cline/main/assets/docs/demo.gif" width="100%" />
@@ -26,7 +26,7 @@
 </table>
 </div>
 
-Cline을 만나보세요, **CLI** 및 **에디터**를 활용할 수 있는 AI 어시스턴트입니다.
+Cline Writer를 만나보세요, 학술 연구, 시나리오 작성, 소설 창작을 전문으로 하는 전문 작가를 위한 AI 글쓰기 어시스턴트입니다.
 
 [Claude 4 Sonnet의 에이전트형 코딩 기능](https://www.anthropic.com/claude/sonnet) 덕분에, Cline은 복잡한 소프트웨어 개발 작업을 단계별로 처리할 수 있습니다. 파일 생성과 편집, 대규모 프로젝트 탐색, 브라우저 사용, 터미널 명령 실행(권한 허가 필요) 등의 도구를 사용하여 단순 코드 완성이나 기술 지원을 넘어서는 도움을 제공합니다. Cline은 Model Context Protocol(MCP)를 사용하여 새로운 도구를 만들고 자신의 기능을 확장할 수도 있습니다. 자율적인 AI 스크립트는 일반적으로 샌드박스 환경에서 실행되지만, 이 확장 프로그램은 모든 파일 변경 및 터미널 명령을 승인할 수 있는 사람이 개입가능한 GUI를 제공하여, 에이전트형 AI의 잠재력을 보다 안전하고 쉽게 탐색할 수 있도록 합니다.
 

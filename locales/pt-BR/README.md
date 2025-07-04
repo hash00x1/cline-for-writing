@@ -1,4 +1,4 @@
-# Cline
+# Cline Writer
 
 <p align="center">
         <img src="https://media.githubusercontent.com/media/cline/cline/main/assets/docs/demo.gif" width="100%" />
@@ -26,7 +26,7 @@
 </table>
 </div>
 
-Conheça o Cline: um assistente de IA que pode usar seu **CLI** e **Editor**.
+Conheça o Cline Writer: um assistente de IA para escritores profissionais, especializado em pesquisa acadêmica, roteirização e escrita de romances.
 
 Graças às [habilidades avançadas do Claude 4 Sonnet](https://www.anthropic.com/claude/sonnet), o Cline pode lidar com tarefas complexas de desenvolvimento de software passo a passo. Com ferramentas que permitem criar e editar arquivos, explorar grandes projetos, usar o navegador e executar comandos no terminal (com sua aprovação), ele pode ajudar você de maneiras que vão além da inclusão de código ou suporte técnico. O Cline pode é capaz inclusive de usar o Model Context Protocol (MCP) para criar novas ferramentas e expandir seus próprios recursos. Embora os scripts de IA autônomas tradicionalmente sejam executados em ambientes isolados, esta extensão oferece uma GUI com um humano no circuito para aprovar cada alteração de arquivo e comando de terminal, fornecendo uma maneira segura e acessível de explorar todo o potencial da IA.
 

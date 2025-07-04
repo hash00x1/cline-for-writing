@@ -147,7 +147,7 @@ Otherwise, if you have not completed the task and do not need additional informa
 	},
 
 	taskResumption: (
-		mode: "plan" | "act",
+		mode: "plan" | "act" | "research" | "write",
 		agoText: string,
 		cwd: string,
 		wasRecent: boolean | 0 | undefined,

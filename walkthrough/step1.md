@@ -1,7 +1,7 @@
-# Beyond Autocomplete: True Agentic Planning
+# Beyond Simple Prompts: True Writing Partnership
 
-**Cline analyzes your request, explores your code, and presents a clear plan.**
+**Cline Writer analyzes your writing goals, explores your project, and presents a clear plan.**
 
-Watch Cline break down complex tasks, ask clarifying questions, and outline its approach. Understand the 'why' before any code is written, ensuring changes align with your architecture and intent.
+Watch Cline Writer break down complex writing tasks, ask clarifying questions about your audience and goals, and outline its approach. Understand the 'why' behind every outline, research direction, and draft structure, ensuring your writing project stays aligned with your vision and intent.
 
-![Cline planning demonstration](https://storage.googleapis.com/cline_public_images/docs/assets/cline-plan-hifi-1_compress.webp)
+![Cline Writer planning demonstration](https://storage.googleapis.com/cline_public_images/docs/assets/cline-plan-hifi-1_compress.webp)

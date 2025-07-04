@@ -1,4 +1,4 @@
-# Cline
+# Cline Writer
 
 <p align="center">
         <img src="https://media.githubusercontent.com/media/cline/cline/main/assets/docs/demo.gif" width="100%" />
@@ -26,7 +26,7 @@
 </table>
 </div>
 
-Lernen Sie Cline kennen, einen KI-Assistenten, der Ihre **CLI** u**N**d **E**ditor nutzen kann.
+Lernen Sie Cline Writer kennen, einen KI-Schreibassistenten für professionelle Autoren, spezialisiert auf akademische Forschung, Drehbuchschreiben und Romanschreiben.
 
 Dank der [agentischen Codierungsfähigkeiten von Claude 4 Sonnet](https://www.anthropic.com/claude/sonnet) kann Cline komplexe Softwareentwicklungsaufgaben Schritt für Schritt bewältigen. Mit Werkzeugen, die ihm das Erstellen und Bearbeiten von Dateien, das Erkunden großer Projekte, die Nutzung des Browsers und das Ausführen von Terminalbefehlen (nach Ihrer Genehmigung) ermöglichen, kann er Ihnen auf eine Weise helfen, die über die Codevervollständigung oder technischen Support hinausgeht. Cline kann sogar das Model Context Protocol (MCP) verwenden, um neue Werkzeuge zu erstellen und seine eigenen Fähigkeiten zu erweitern. Während autonome KI-Skripte traditionell in sandboxed Umgebungen laufen, bietet diese Erweiterung eine Mensch-in-der-Schleife-GUI, um jede Dateiänderung und jeden Terminalbefehl zu genehmigen, was eine sichere und zugängliche Möglichkeit bietet, das Potenzial agentischer KI zu erkunden.
 

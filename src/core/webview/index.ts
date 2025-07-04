@@ -175,6 +175,9 @@ export class WebviewProvider implements vscode.WebviewViewProvider {
 			// if the extension is starting a new session, clear previous task state
 			this.controller.clearTask()
 
+			// Post initial state to webview after resolution
+			await this.controller.postStateToWebview()
+
 			this.outputChannel.appendLine("Webview view resolved")
 
 			// Title setting logic removed to allow VSCode to use the container title primarily.
@@ -254,7 +257,7 @@ export class WebviewProvider implements vscode.WebviewViewProvider {
 				<link href="${codiconsUri}" rel="stylesheet" />
 				<link href="${katexCssUri}" rel="stylesheet" />
 				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src https://*.posthog.com https://*.firebaseauth.com https://*.firebaseio.com https://*.googleapis.com https://*.firebase.com; font-src ${webview.cspSource} data:; style-src ${webview.cspSource} 'unsafe-inline'; img-src ${webview.cspSource} https: data:; script-src 'nonce-${nonce}' 'unsafe-eval';">
-				<title>Cline</title>
+				<title>Cline Writer</title>
 			</head>
 			<body>
 				<noscript>You need to enable JavaScript to run this app.</noscript>
@@ -371,7 +374,7 @@ export class WebviewProvider implements vscode.WebviewViewProvider {
 					<link rel="stylesheet" type="text/css" href="${stylesUri}">
 					<link href="${codiconsUri}" rel="stylesheet" />
 					<link href="${katexCssUri}" rel="stylesheet" />
-					<title>Cline</title>
+					<title>Cline Writer</title>
 				</head>
 				<body>
 					<div id="root"></div>
