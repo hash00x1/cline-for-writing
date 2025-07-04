@@ -115,13 +115,13 @@
 		"viewsContainers": {
 			"activitybar": [
 				{
-					"id": "cline-writer-ActivityBar",
+					"id": "claude-dev-ActivityBar",
 					"title": "Cline Writer (⌘+')",
 					"icon": "assets/icons/icon.svg",
 					"when": "isMac"
 				},
 				{
-					"id": "cline-writer-ActivityBar",
+					"id": "claude-dev-ActivityBar",
 					"title": "Cline Writer (Ctrl+')",
 					"icon": "assets/icons/icon.svg",
 					"when": "!isMac"
@@ -129,10 +129,10 @@
 			]
 		},
 		"views": {
-			"cline-writer-ActivityBar": [
+			"claude-dev-ActivityBar": [
 				{
 					"type": "webview",
-					"id": "cline-writer.SidebarProvider",
+					"id": "claude-dev.SidebarProvider",
 					"name": "",
 					"icon": "assets/icons/icon.svg"
 				}
@@ -255,32 +255,32 @@
 				{
 					"command": "cline.newWritingProject",
 					"group": "navigation@1",
-					"when": "view == cline-writer.SidebarProvider"
+					"when": "view == claude-dev.SidebarProvider"
 				},
 				{
 					"command": "cline.mcpButtonClicked",
 					"group": "navigation@2",
-					"when": "view == cline-writer.SidebarProvider"
+					"when": "view == claude-dev.SidebarProvider"
 				},
 				{
 					"command": "cline.historyButtonClicked",
 					"group": "navigation@3",
-					"when": "view == cline-writer.SidebarProvider"
+					"when": "view == claude-dev.SidebarProvider"
 				},
 				{
 					"command": "cline.popoutButtonClicked",
 					"group": "navigation@4",
-					"when": "view == cline-writer.SidebarProvider"
+					"when": "view == claude-dev.SidebarProvider"
 				},
 				{
 					"command": "cline.accountButtonClicked",
 					"group": "navigation@5",
-					"when": "view == cline-writer.SidebarProvider"
+					"when": "view == claude-dev.SidebarProvider"
 				},
 				{
 					"command": "cline.settingsButtonClicked",
 					"group": "navigation@6",
-					"when": "view == cline-writer.SidebarProvider"
+					"when": "view == claude-dev.SidebarProvider"
 				}
 			],
 			"editor/title": [
