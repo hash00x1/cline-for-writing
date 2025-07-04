@@ -85,10 +85,13 @@ export class TerminalManager {
 	constructor() {
 		let disposable: vscode.Disposable | undefined
 		try {
-			disposable = vscode.window.onDidStartTerminalShellExecution?.(async (e: vscode.TerminalShellExecutionStartEvent) => {
-				// Creating a read stream here results in a more consistent output. This is most obvious when running the `date` command.
-				e?.execution?.read()
-			})
+			// Check if the terminal shell execution API is available
+			if ('onDidStartTerminalShellExecution' in vscode.window) {
+				disposable = (vscode.window as any).onDidStartTerminalShellExecution(async (e: any) => {
+					// Creating a read stream here results in a more consistent output. This is most obvious when running the `date` command.
+					e?.execution?.read()
+				})
+			}
 		} catch (error) {
 			// console.error("Error setting up onDidEndTerminalShellExecution", error)
 		}
@@ -128,7 +131,7 @@ export class TerminalManager {
 			return false
 		}
 
-		const currentCwd = terminalInfo.terminal.shellIntegration?.cwd?.fsPath
+		const currentCwd = (terminalInfo.terminal as any).shellIntegration?.cwd?.fsPath
 		const targetCwd = vscode.Uri.file(terminalInfo.pendingCwdChange).fsPath
 
 		if (!currentCwd) {
@@ -172,7 +175,7 @@ export class TerminalManager {
 		})
 
 		// if shell integration is already active, run the command immediately
-		if (terminalInfo.terminal.shellIntegration) {
+		if ((terminalInfo.terminal as any).shellIntegration) {
 			process.waitForShellIntegration = false
 			process.run(terminalInfo.terminal, command)
 		} else {
@@ -180,7 +183,7 @@ export class TerminalManager {
 			console.log(
 				`[TerminalManager Test] Waiting for shell integration for terminal ${terminalInfo.id} with timeout ${this.shellIntegrationTimeout}ms`,
 			)
-			pWaitFor(() => terminalInfo.terminal.shellIntegration !== undefined, {
+			pWaitFor(() => (terminalInfo.terminal as any).shellIntegration !== undefined, {
 				timeout: this.shellIntegrationTimeout,
 			})
 				.then(() => {
@@ -224,7 +227,7 @@ export class TerminalManager {
 			if (t.shellPath !== expectedShellPath) {
 				return false
 			}
-			const terminalCwd = t.terminal.shellIntegration?.cwd // one of cline's commands could have changed the cwd of the terminal
+			const terminalCwd = (t.terminal as any).shellIntegration?.cwd // one of cline's commands could have changed the cwd of the terminal
 			if (!terminalCwd) {
 				console.log(`[TerminalManager] Terminal ${t.id} has no cwd, skipping`)
 				return false

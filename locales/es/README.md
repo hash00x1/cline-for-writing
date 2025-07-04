@@ -1,14 +1,14 @@
-# Cline
+# Cline Writer
 
 <p align="center">
-        <img src="https://media.githubusercontent.com/media/cline/cline/main/assets/docs/demo.gif" width="100%" />
+        <img src="https://media.githubusercontent.com/media/cline/cline-for-writing/main/assets/docs/demo.gif" width="100%" />
 </p>
 
 <div align="center">
 <table>
 <tbody>
 <td align="center">
-<a href="https://marketplace.visualstudio.com/items?itemName=saoudrizwan.claude-dev" target="_blank"><strong>Descargar en VS Marketplace</strong></a>
+<a href="https://marketplace.visualstudio.com/items?itemName=saoudrizwan.cline-writer" target="_blank"><strong>Descargar en VS Marketplace</strong></a>
 </td>
 <td align="center">
 <a href="https://discord.gg/cline" target="_blank"><strong>Discord</strong></a>
@@ -17,16 +17,16 @@
 <a href="https://www.reddit.com/r/cline/" target="_blank"><strong>r/cline</strong></a>
 </td>
 <td align="center">
-<a href="https://github.com/cline/cline/discussions/categories/feature-requests?discussions_q=is%3Aopen+category%3A%22Feature+Requests%22+sort%3Atop" target="_blank"><strong>Solicitudes de Funciones</strong></a>
+<a href="https://github.com/cline/cline-for-writing/discussions/categories/feature-requests?discussions_q=is%3Aopen+category%3A%22Feature+Requests%22+sort%3Atop" target="_blank"><strong>Solicitudes de Funciones</strong></a>
 </td>
 <td align="center">
-<a href="https://cline.bot/join-us" target="_blank"><strong>Estamos Contratando!</strong></a>
+<a href="https://docs.cline.bot/getting-started/for-writers" target="_blank"><strong>Empezar</strong></a>
 </td>
 </tbody>
 </table>
 </div>
 
-Conozca a Cline, un asistente de IA que puede usar su **CLI** y **E**ditor.
+Conozca a Cline Writer, un asistente de IA especializado en escritura profesional para **investigación académica**, **guionismo** y **escritura de novelas**.
 
 Gracias a las [habilidades de codificación agencial de Claude 4 Sonnet](https://www.anthropic.com/claude/sonnet), Cline puede abordar tareas complejas de desarrollo de software paso a paso. Con herramientas que le permiten crear y editar archivos, explorar grandes proyectos, usar el navegador y ejecutar comandos de terminal (con su aprobación), puede ayudarle de una manera que va más allá de la autocompletación de código o el soporte técnico. Cline incluso puede usar el Model Context Protocol (MCP) para crear nuevas herramientas y expandir sus propias capacidades. Mientras que los scripts de IA autónomos tradicionalmente se ejecutan en entornos aislados, esta extensión ofrece una GUI con un humano en el bucle para aprobar cada cambio de archivo y comando de terminal, proporcionando una forma segura y accesible de explorar el potencial de la IA agencial.
 

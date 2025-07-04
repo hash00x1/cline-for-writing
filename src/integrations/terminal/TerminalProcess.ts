@@ -54,14 +54,14 @@ export class TerminalProcess extends EventEmitter<TerminalProcessEvents> {
 
 		this.command = command
 		console.log(`[TerminalProcess] Starting command: "${command}"`)
-		console.log(`[TerminalProcess] Shell integration available: ${!!terminal.shellIntegration?.executeCommand}`)
+		console.log(`[TerminalProcess] Shell integration available: ${!!(terminal as any).shellIntegration?.executeCommand}`)
 		console.log(`[TerminalProcess] Terminal ID: ${terminal.name}`)
-		if (terminal.shellIntegration && terminal.shellIntegration.executeCommand) {
+		if ((terminal as any).shellIntegration && (terminal as any).shellIntegration.executeCommand) {
 			let execution
 			let stream
 
 			try {
-				execution = terminal.shellIntegration.executeCommand(command)
+				execution = (terminal as any).shellIntegration.executeCommand(command)
 				stream = execution.read()
 			} catch (error) {
 				console.error(`[TerminalProcess] Failed to execute command: ${error}`)
