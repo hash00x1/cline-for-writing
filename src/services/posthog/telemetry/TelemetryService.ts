@@ -342,11 +342,11 @@ class TelemetryService {
 	}
 
 	/**
-	 * Records when a task switches between plan and act modes
+	 * Records when a task switches between plan, act, research, and write modes
 	 * @param taskId Unique identifier for the task
-	 * @param mode The mode being switched to (plan or act)
+	 * @param mode The mode being switched to (plan, act, research, or write)
 	 */
-	public captureModeSwitch(taskId: string, mode: "plan" | "act", collect: boolean = false) {
+	public captureModeSwitch(taskId: string, mode: "plan" | "act" | "research" | "write", collect: boolean = false) {
 		this.capture(
 			{
 				event: TelemetryService.EVENTS.TASK.MODE_SWITCH,
@@ -611,7 +611,7 @@ class TelemetryService {
 	 * @param qty The quantity of options that were presented
 	 * @param mode The mode in which the option was selected ("plan" or "act")
 	 */
-	public captureOptionSelected(taskId: string, qty: number, mode: "plan" | "act", collect: boolean = false) {
+	public captureOptionSelected(taskId: string, qty: number, mode: "plan" | "act" | "research" | "write", collect: boolean = false) {
 		this.capture(
 			{
 				event: TelemetryService.EVENTS.TASK.OPTION_SELECTED,
@@ -631,7 +631,7 @@ class TelemetryService {
 	 * @param qty The quantity of options that were presented
 	 * @param mode The mode in which the custom response was provided ("plan" or "act")
 	 */
-	public captureOptionsIgnored(taskId: string, qty: number, mode: "plan" | "act", collect: boolean = false) {
+	public captureOptionsIgnored(taskId: string, qty: number, mode: "plan" | "act" | "research" | "write", collect: boolean = false) {
 		this.capture(
 			{
 				event: TelemetryService.EVENTS.TASK.OPTIONS_IGNORED,
