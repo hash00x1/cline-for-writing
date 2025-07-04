@@ -175,6 +175,9 @@ export class WebviewProvider implements vscode.WebviewViewProvider {
 			// if the extension is starting a new session, clear previous task state
 			this.controller.clearTask()
 
+			// Post initial state to webview after resolution
+			await this.controller.postStateToWebview()
+
 			this.outputChannel.appendLine("Webview view resolved")
 
 			// Title setting logic removed to allow VSCode to use the container title primarily.
