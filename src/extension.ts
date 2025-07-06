@@ -40,12 +40,12 @@ let outputChannel: vscode.OutputChannel
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
-	outputChannel = vscode.window.createOutputChannel("Cline")
+	outputChannel = vscode.window.createOutputChannel("Cline Writer")
 	context.subscriptions.push(outputChannel)
 
 	ErrorService.initialize()
 	Logger.initialize(outputChannel)
-	Logger.log("Cline extension activated")
+	Logger.log("Cline Writer extension activated")
 
 	// Migrate global storage values to workspace storage (one-time cleanup)
 	await migratePlanActGlobalToWorkspaceStorage(context)
@@ -75,12 +75,12 @@ export async function activate(context: vscode.ExtensionContext) {
 	// Perform post-update actions if necessary
 	try {
 		if (!previousVersion || currentVersion !== previousVersion) {
-			Logger.log(`Cline version changed: ${previousVersion} -> ${currentVersion}. First run or update detected.`)
+			Logger.log(`Cline Writer version changed: ${previousVersion} -> ${currentVersion}. First run or update detected.`)
 			const lastShownPopupNotificationVersion = context.globalState.get<string>("clineLastPopupNotificationVersion")
 
 			if (currentVersion !== lastShownPopupNotificationVersion && previousVersion) {
 				// Show VS Code popup notification as this version hasn't been notified yet without doing it for fresh installs
-				const message = `Cline has been updated to v${currentVersion}`
+				const message = `Cline Writer has been updated to v${currentVersion}`
 				await vscode.commands.executeCommand("claude-dev.SidebarProvider.focus")
 				await new Promise((resolve) => setTimeout(resolve, 200))
 				vscode.window.showInformationMessage(message)
@@ -621,7 +621,7 @@ export async function activate(context: vscode.ExtensionContext) {
 				await controller.generateGitCommitMessage()
 			} else {
 				// Create a temporary controller just for this operation
-				const outputChannel = vscode.window.createOutputChannel("Cline Commit Generator")
+				const outputChannel = vscode.window.createOutputChannel("Cline Writer Commit Generator")
 				const tempController = new Controller(context, outputChannel, () => Promise.resolve(true))
 
 				await tempController.generateGitCommitMessage()

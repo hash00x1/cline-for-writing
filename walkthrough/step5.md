@@ -1,7 +1,7 @@
-# No Black Box: Full Visibility & Control
+# No Black Box: Full Visibility & Control Over Your Writing
 
-**Cline operates with complete transparency, showing you every file read and every proposed diff.**
+**Cline Writer operates with complete transparency, showing you every document read and every proposed edit.**
 
-Understand exactly what Cline is doing and why—no obfuscation. Review all actions and approve changes before they're made. Cline uses checkpoints, allowing you to easily revert if needed, maintaining full control over your codebase. With BYO-key, you also have clear cost transparency.
+Understand exactly what Cline Writer is doing and why—no obfuscation. Review all writing suggestions and approve changes before they're made. Cline Writer uses checkpoints, allowing you to easily revert if needed, maintaining full control over your manuscripts and research. With BYO-key, you also have clear cost transparency for your writing projects.
 
-![Cline Transparency Demo](https://storage.googleapis.com/cline_public_images/docs/assets/clines-transparency-hifi-5_compress.webp)
+![Cline Writer Transparency Demo](https://storage.googleapis.com/cline_public_images/docs/assets/clines-transparency-hifi-5_compress.webp)
