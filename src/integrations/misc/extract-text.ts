@@ -8,6 +8,16 @@ import * as chardet from "jschardet"
 import * as iconv from "iconv-lite"
 import ExcelJS from "exceljs"
 
+export interface Citation {
+	text: string
+	index: number
+}
+
+export interface ExtractionResult {
+	text: string
+	citations: Citation[]
+}
+
 export async function detectEncoding(fileBuffer: Buffer, fileExtension?: string): Promise<string> {
 	const detected = chardet.detect(fileBuffer)
 	if (typeof detected === "string") {
@@ -25,7 +35,33 @@ export async function detectEncoding(fileBuffer: Buffer, fileExtension?: string)
 	}
 }
 
+function parseCitations(text: string): Citation[] {
+	const citations: Citation[] = []
+	const seen = new Set<string>()
+	const patterns = [
+		/\[(\d{1,3})\]/g, // numeric citations like [1]
+		/\(([^()]+?,\s*\d{4}[a-z]?)\)/g, // (Author, 2020)
+		/([A-Z][a-zA-Z]+ et al\.,?\s*\d{4}[a-z]?)/g, // Author et al., 2020
+	]
+	for (const pattern of patterns) {
+		let match: RegExpExecArray | null
+		while ((match = pattern.exec(text)) !== null) {
+			const citation = match[0]
+			if (!seen.has(citation)) {
+				seen.add(citation)
+				citations.push({ text: citation, index: match.index })
+			}
+		}
+	}
+	return citations
+}
+
 export async function extractTextFromFile(filePath: string): Promise<string> {
+	const { text } = await extractTextAndCitationsFromFile(filePath)
+	return text
+}
+
+export async function extractTextAndCitationsFromFile(filePath: string): Promise<ExtractionResult> {
 	try {
 		await fs.access(filePath)
 	} catch (error) {
@@ -38,9 +74,11 @@ export async function extractTextFromFile(filePath: string): Promise<string> {
 		case ".docx":
 			return extractTextFromDOCX(filePath)
 		case ".ipynb":
-			return extractTextFromIPYNB(filePath)
+			const ipynbText = await extractTextFromIPYNB(filePath)
+			return { text: ipynbText, citations: [] }
 		case ".xlsx":
-			return extractTextFromExcel(filePath)
+			const excelText = await extractTextFromExcel(filePath)
+			return { text: excelText, citations: [] }
 		default:
 			const fileBuffer = await fs.readFile(filePath)
 			if (fileBuffer.byteLength > 20 * 1000 * 1024) {
@@ -48,19 +86,22 @@ export async function extractTextFromFile(filePath: string): Promise<string> {
 				throw new Error(`File is too large to read into context.`)
 			}
 			const encoding = await detectEncoding(fileBuffer, fileExtension)
-			return iconv.decode(fileBuffer, encoding)
+			const text = iconv.decode(fileBuffer, encoding)
+			return { text, citations: [] }
 	}
 }
 
-async function extractTextFromPDF(filePath: string): Promise<string> {
+async function extractTextFromPDF(filePath: string): Promise<ExtractionResult> {
 	const dataBuffer = await fs.readFile(filePath)
 	const data = await pdf(dataBuffer)
-	return data.text
+	const text = data.text
+	return { text, citations: parseCitations(text) }
 }
 
-async function extractTextFromDOCX(filePath: string): Promise<string> {
+async function extractTextFromDOCX(filePath: string): Promise<ExtractionResult> {
 	const result = await mammoth.extractRawText({ path: filePath })
-	return result.value
+	const text = result.value
+	return { text, citations: parseCitations(text) }
 }
 
 async function extractTextFromIPYNB(filePath: string): Promise<string> {

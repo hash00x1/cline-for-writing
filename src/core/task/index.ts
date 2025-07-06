@@ -57,6 +57,7 @@ import { DEFAULT_LANGUAGE_SETTINGS, getLanguageKey, LanguageDisplay } from "@sha
 import { ClineAskResponse, ClineCheckpointRestore } from "@shared/WebviewMessage"
 import { calculateApiCostAnthropic } from "@utils/cost"
 import { fileExistsAtPath } from "@utils/fs"
+import fs from "fs/promises"
 import { createAndOpenGitHubIssue } from "@utils/github-url-utils"
 import { arePathsEqual, getReadablePath, isLocatedInWorkspace } from "@utils/path"
 import { fixModelHtmlEscaping, removeInvalidChars } from "@utils/string"
@@ -1618,24 +1619,34 @@ export class Task {
 
 	// Check if the tool should be auto-approved based on the settings
 	// Returns bool for most tools, and tuple for tools with nested settings
-	shouldAutoApproveTool(toolName: ToolUseName): boolean | [boolean, boolean] {
-		if (this.autoApprovalSettings.enabled) {
+        shouldAutoApproveTool(toolName: ToolUseName): boolean | [boolean, boolean] {
+                if (this.autoApprovalSettings.enabled) {
 			switch (toolName) {
 				case "read_file":
 				case "list_files":
 				case "list_code_definition_names":
-				case "search_files":
-					return [
-						this.autoApprovalSettings.actions.readFiles,
-						this.autoApprovalSettings.actions.readFilesExternally ?? false,
-					]
-				case "new_rule":
-				case "write_to_file":
-				case "replace_in_file":
-					return [
-						this.autoApprovalSettings.actions.editFiles,
-						this.autoApprovalSettings.actions.editFilesExternally ?? false,
-					]
+                                case "search_files":
+                                        return [
+                                                this.autoApprovalSettings.actions.readFiles,
+                                                this.autoApprovalSettings.actions.readFilesExternally ?? false,
+                                        ]
+                                case "create_outline":
+                                        return [
+                                                this.autoApprovalSettings.actions.readFiles,
+                                                this.autoApprovalSettings.actions.readFilesExternally ?? false,
+                                        ]
+                                case "new_rule":
+                                case "write_to_file":
+                                case "replace_in_file":
+                                        return [
+                                                this.autoApprovalSettings.actions.editFiles,
+                                                this.autoApprovalSettings.actions.editFilesExternally ?? false,
+                                        ]
+                                case "insert_citation":
+                                        return [
+                                                this.autoApprovalSettings.actions.editFiles,
+                                                this.autoApprovalSettings.actions.editFilesExternally ?? false,
+                                        ]
 				case "execute_command":
 					return [
 						this.autoApprovalSettings.actions.executeSafeCommands ?? false,
@@ -1656,15 +1667,15 @@ export class Task {
 	// Check if the tool should be auto-approved based on the settings
 	// and the path of the action. Returns true if the tool should be auto-approved
 	// based on the user's settings and the path of the action.
-	shouldAutoApproveToolWithPath(blockname: ToolUseName, autoApproveActionpath: string | undefined): boolean {
-		let isLocalRead: boolean = false
-		if (autoApproveActionpath) {
-			const absolutePath = path.resolve(cwd, autoApproveActionpath)
-			isLocalRead = absolutePath.startsWith(cwd)
-		} else {
-			// If we do not get a path for some reason, default to a (safer) false return
-			isLocalRead = false
-		}
+        shouldAutoApproveToolWithPath(blockname: ToolUseName, autoApproveActionpath: string | undefined): boolean {
+                let isLocalRead: boolean = false
+                if (autoApproveActionpath) {
+                        const absolutePath = path.resolve(cwd, autoApproveActionpath)
+                        isLocalRead = absolutePath.startsWith(cwd)
+                } else {
+                        // If we do not get a path for some reason, default to a (safer) false return
+                        isLocalRead = false
+                }
 
 		// Get auto-approve settings for local and external edits
 		const autoApproveResult = this.shouldAutoApproveTool(blockname)
@@ -1672,12 +1683,22 @@ export class Task {
 			? autoApproveResult
 			: [autoApproveResult, false]
 
-		if ((isLocalRead && autoApproveLocal) || (!isLocalRead && autoApproveLocal && autoApproveExternal)) {
-			return true
-		} else {
-			return false
-		}
-	}
+                if ((isLocalRead && autoApproveLocal) || (!isLocalRead && autoApproveLocal && autoApproveExternal)) {
+                        return true
+                } else {
+                        return false
+                }
+        }
+
+        // Determines whether a tool is allowed based on the current mode
+        private isToolPermitted(toolName: ToolUseName): boolean {
+                const editingTools = ["write_to_file", "replace_in_file", "new_rule", "execute_command"]
+                if (this.chatSettings.mode === "research" || this.chatSettings.mode === "plan") {
+                        return !editingTools.includes(toolName)
+                }
+                // "write" or "act" modes allow all tools
+                return true
+        }
 
 	private formatErrorWithStatusCode(error: any): string {
 		const statusCode = error.status || error.statusCode || (error.response && error.response.status)
@@ -2160,10 +2181,14 @@ export class Task {
 							return `[${block.name}]`
 						case "new_rule":
 							return `[${block.name} for '${block.params.path}']`
-						case "web_fetch":
-							return `[${block.name} for '${block.params.url}']`
-					}
-				}
+                                                case "web_fetch":
+                                                        return `[${block.name} for '${block.params.url}']`
+                                                case "create_outline":
+                                                        return `[${block.name} for '${block.params.path}']`
+                                                case "insert_citation":
+                                                        return `[${block.name} for '${block.params.path}']`
+                                        }
+                                }
 
 				if (this.didRejectTool) {
 					// ignore any tool content after user has rejected tool once
@@ -2320,11 +2345,16 @@ export class Task {
 					await this.browserSession.closeBrowser()
 				}
 
-				switch (block.name) {
-					case "new_rule":
-					case "write_to_file":
-					case "replace_in_file": {
-						const relPath: string | undefined = block.params.path
+                                switch (block.name) {
+                                        case "new_rule":
+                                        case "write_to_file":
+                                        case "replace_in_file": {
+                                                if (!this.isToolPermitted(block.name)) {
+                                                        pushToolResult(formatResponse.toolNotAllowedInMode(this.chatSettings.mode))
+                                                        await this.saveCheckpoint()
+                                                        break
+                                                }
+                                                const relPath: string | undefined = block.params.path
 						let content: string | undefined = block.params.content // for write_to_file
 						let diff: string | undefined = block.params.diff // for replace_in_file
 						if (!relPath || (!content && !diff)) {
@@ -2753,17 +2783,95 @@ export class Task {
 								// Track file read operation
 								await this.fileContextTracker.trackFileContext(relPath, "read_tool")
 
-								pushToolResult(content)
-								await this.saveCheckpoint()
-								break
-							}
-						} catch (error) {
-							await handleError("reading file", error)
-							await this.saveCheckpoint()
-							break
-						}
-					}
-					case "list_files": {
+                                                                pushToolResult(content)
+                                                                await this.saveCheckpoint()
+                                                                break
+                                                        }
+                                                } catch (error) {
+                                                        await handleError("reading file", error)
+                                                        await this.saveCheckpoint()
+                                                        break
+                                                }
+                                        }
+                                        case "create_outline": {
+                                                const relPath: string | undefined = block.params.path
+                                                try {
+                                                        if (!relPath) {
+                                                                this.consecutiveMistakeCount++
+                                                                pushToolResult(await this.sayAndCreateMissingParamError("create_outline", "path"))
+                                                                await this.saveCheckpoint()
+                                                                break
+                                                        }
+
+                                                        const accessAllowed = this.clineIgnoreController.validateAccess(relPath)
+                                                        if (!accessAllowed) {
+                                                                await this.say("clineignore_error", relPath)
+                                                                pushToolResult(formatResponse.toolError(formatResponse.clineIgnoreError(relPath)))
+                                                                await this.saveCheckpoint()
+                                                                break
+                                                        }
+
+                                                        const absolutePath = path.resolve(cwd, relPath)
+                                                        const fileText = await extractTextFromFile(absolutePath)
+                                                        const outline = fileText
+                                                                .split(/\r?\n/)
+                                                                .filter((l) => l.trim().match(/^#|\\\w*section\{|^\\\\section/))
+                                                                .map((l) => `- ${l.replace(/[#{}]/g, "").trim()}`)
+                                                                .join("\n")
+
+                                                        await this.fileContextTracker.trackFileContext(relPath, "read_tool")
+
+                                                        pushToolResult(outline || "No headings found.")
+                                                        await this.saveCheckpoint()
+                                                        break
+                                                } catch (error) {
+                                                        await handleError("creating outline", error)
+                                                        await this.saveCheckpoint()
+                                                        break
+                                                }
+                                        }
+                                        case "insert_citation": {
+                                                const relPath: string | undefined = block.params.path
+                                                const citation: string | undefined = block.params.citation
+                                                const marker: string | undefined = block.params.marker
+                                                try {
+                                                        if (!relPath || !citation || !marker) {
+                                                                this.consecutiveMistakeCount++
+                                                                let missing = !relPath ? "path" : !citation ? "citation" : "marker"
+                                                                pushToolResult(await this.sayAndCreateMissingParamError("insert_citation", missing))
+                                                                await this.saveCheckpoint()
+                                                                break
+                                                        }
+
+                                                        const accessAllowed = this.clineIgnoreController.validateAccess(relPath)
+                                                        if (!accessAllowed) {
+                                                                await this.say("clineignore_error", relPath)
+                                                                pushToolResult(formatResponse.toolError(formatResponse.clineIgnoreError(relPath)))
+                                                                await this.saveCheckpoint()
+                                                                break
+                                                        }
+
+                                                        const absolutePath = path.resolve(cwd, relPath)
+                                                        let text = await fs.readFile(absolutePath, "utf8")
+                                                        const idx = text.indexOf(marker)
+                                                        if (idx === -1) {
+                                                                pushToolResult(formatResponse.toolError(`Marker not found in ${relPath}`))
+                                                                await this.saveCheckpoint()
+                                                                break
+                                                        }
+                                                        text = text.slice(0, idx + marker.length) + citation + text.slice(idx + marker.length)
+                                                        await fs.writeFile(absolutePath, text)
+                                                        this.fileContextTracker.markFileAsEditedByCline(relPath)
+                                                        pushToolResult(`Citation inserted into ${relPath}`)
+                                                        await this.saveCheckpoint()
+                                                        break
+                                                } catch (error) {
+                                                        await handleError("inserting citation", error)
+                                                        await this.saveCheckpoint()
+                                                        break
+                                                }
+                                        }
+                                        case "list_files": {
 						const isClaude4Model = isClaude4ModelFamily(this.api)
 						const relDirPath: string | undefined = block.params.path
 						const recursiveRaw: string | undefined = block.params.recursive
@@ -3214,8 +3322,13 @@ export class Task {
 							break
 						}
 					}
-					case "execute_command": {
-						let command: string | undefined = block.params.command
+                                        case "execute_command": {
+                                                if (!this.isToolPermitted(block.name)) {
+                                                        pushToolResult(formatResponse.toolNotAllowedInMode(this.chatSettings.mode))
+                                                        await this.saveCheckpoint()
+                                                        break
+                                                }
+                                                let command: string | undefined = block.params.command
 						const requiresApprovalRaw: string | undefined = block.params.requires_approval
 						const requiresApprovalPerLLM = requiresApprovalRaw?.toLowerCase() === "true"
 
@@ -5095,12 +5208,16 @@ export class Task {
 		details += "\n\n# Context Window Usage"
 		details += `\n${lastApiReqTotalTokens.toLocaleString()} / ${(contextWindow / 1000).toLocaleString()}K tokens used (${usagePercentage}%)`
 
-		details += "\n\n# Current Mode"
-		if (this.chatSettings.mode === "plan") {
-			details += "\nPLAN MODE\n" + formatResponse.planModeInstructions()
-		} else {
-			details += "\nACT MODE"
-		}
+                details += "\n\n# Current Mode"
+                if (this.chatSettings.mode === "plan") {
+                        details += "\nPLAN MODE\n" + formatResponse.planModeInstructions()
+                } else if (this.chatSettings.mode === "research") {
+                        details += "\nRESEARCH MODE"
+                } else if (this.chatSettings.mode === "write") {
+                        details += "\nWRITE MODE"
+                } else {
+                        details += "\nACT MODE"
+                }
 
 		return `<environment_details>\n${details.trim()}\n</environment_details>`
 	}
