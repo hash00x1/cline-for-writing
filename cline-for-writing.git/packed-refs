@@ -1,0 +1,10 @@
+# pack-refs with: peeled fully-peeled sorted 
+edb9ca6fca9a0ba5554ab16e5ab1afa990e5f338 refs/heads/codex/add-unit-tests-for-writing-tools-and-mode-logic
+e0b95e14e027bcf434cc8befa037238df5dbc28a refs/heads/codex/create-tool-definitions-and-handlers
+cfee47ef27151b9445662ca6d417ffa6d33feda5 refs/heads/codex/enhance-extract-text.ts-to-parse-citations
+0b999add4b80472bd7c0237b6cf7b426e27af72a refs/heads/codex/replace-coding-guides-with-writing-scenarios
+fc101f93b262da7ab408a8b5abfb83dccb12556e refs/heads/codex/update-cline-description-to-writing-assistant
+7bd808f5d67ba4e11470f017e87ae12cc0faa7df refs/heads/codex/update-task-modes-and-tool-logic
+18cb1bc6590c910e528608682b622d36529ac20a refs/heads/main
+2e3fd9ae033e5a1680da2fb70ff67079eb79c0b3 refs/heads/stanadlone_compile
+b62f61fbc610ced5f4857f4a9529e2a9079d7bf3 refs/heads/standalon_compile
