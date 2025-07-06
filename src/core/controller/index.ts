@@ -272,7 +272,9 @@ export class Controller {
 		const didSwitchToActMode = chatSettings.mode === "act"
 
 		// Capture mode switch telemetry | Capture regardless of if we know the taskId
-		telemetryService.captureModeSwitch(this.task?.taskId ?? "0", chatSettings.mode)
+		// Map research/write modes to plan/act for telemetry compatibility
+		const telemetryMode = chatSettings.mode === "research" || chatSettings.mode === "plan" ? "plan" : "act"
+		telemetryService.captureModeSwitch(this.task?.taskId ?? "0", telemetryMode)
 
 		// Get previous model info that we will revert to after saving current mode api info
 		const {

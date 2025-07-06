@@ -61,6 +61,12 @@ const extensionContext: ExtensionContext = {
 
 	// TODO(sjf): Workspace state needs to be per project/workspace.
 	workspaceState: new MementoStore(path.join(DATA_DIR, "workspaceState.json")),
+
+	// Language model access information (required in newer VS Code API)
+	languageModelAccessInformation: {
+		onDidChange: () => ({ dispose: () => {} }),
+		canSendRequest: () => undefined,
+	},
 }
 
 function getPackageVersion(): string {
