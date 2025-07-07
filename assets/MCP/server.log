@@ -1,0 +1,1 @@
+2025-07-07 23:38:16,316 - root - ERROR - Local modules not available: cannot import name 'FileWatcher' from 'file_watcher' (/Users/Lukas_1/cline-for-writing/assets/MCP/file_watcher.py)

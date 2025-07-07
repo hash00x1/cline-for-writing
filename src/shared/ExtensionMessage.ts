@@ -24,6 +24,11 @@ export interface ExtensionMessage {
 		| "userCreditsUsage"
 		| "userCreditsPayments"
 		| "grpc_response" // New type for gRPC responses
+		| "cardCreated"
+		| "cardUpdated"
+		| "cardDeleted"
+		| "chunkCreated"
+		| "viewCreated"
 	text?: string
 	action?: "didBecomeVisible" | "accountLogoutClicked"
 	state?: ExtensionState
@@ -65,6 +70,13 @@ export interface ExtensionMessage {
 		is_streaming?: boolean // Whether this is part of a streaming response
 		sequence_number?: number // For ordering chunks in streaming responses
 	}
+	// Cardboard-specific properties
+	card?: any // WritingCard object
+	cardId?: string
+	chunk?: any // ContentChunk object
+	chunkId?: string
+	view?: any // CardboardView object
+	viewId?: string
 }
 
 export type Platform = "aix" | "darwin" | "freebsd" | "linux" | "openbsd" | "sunos" | "win32" | "unknown"

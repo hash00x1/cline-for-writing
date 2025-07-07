@@ -1,0 +1,22 @@
+{
+	"mcpServers": {
+		"paragraph-embeddings": {
+			"command": "python",
+			"args": ["/Users/Lukas_1/cline-for-writing/assets/MCP/paragraph_embeddings_server.py"],
+			"cwd": "/Users/Lukas_1/cline-for-writing/assets/MCP",
+			"env": {
+				"PYTHONPATH": "/Users/Lukas_1/cline-for-writing/assets/MCP"
+			},
+			"disabled": false,
+			"autoApprove": [
+				"start_watching",
+				"stop_watching",
+				"search_paragraphs",
+				"get_similar_content",
+				"update_file",
+				"get_embedding_stats",
+				"list_watched_files"
+			]
+		}
+	}
+}

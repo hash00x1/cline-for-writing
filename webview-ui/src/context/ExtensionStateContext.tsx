@@ -51,6 +51,7 @@ interface ExtensionStateContextType extends ExtensionState {
 	showHistory: boolean
 	showAccount: boolean
 	showAnnouncement: boolean
+	showCardboard: boolean
 
 	// Setters
 	setApiConfiguration: (config: ApiConfiguration) => void
@@ -91,12 +92,14 @@ interface ExtensionStateContextType extends ExtensionState {
 	navigateToHistory: () => void
 	navigateToAccount: () => void
 	navigateToChat: () => void
+	navigateToCardboard: () => void
 
 	// Hide functions
 	hideSettings: () => void
 	hideHistory: () => void
 	hideAccount: () => void
 	hideAnnouncement: () => void
+	hideCardboard: () => void
 	closeMcpView: () => void
 
 	// Event callbacks
@@ -118,6 +121,7 @@ export const ExtensionStateContextProvider: React.FC<{
 	const [showHistory, setShowHistory] = useState(false)
 	const [showAccount, setShowAccount] = useState(false)
 	const [showAnnouncement, setShowAnnouncement] = useState(false)
+	const [showCardboard, setShowCardboard] = useState(false)
 
 	// Helper for MCP view
 	const closeMcpView = useCallback(() => {
@@ -130,6 +134,7 @@ export const ExtensionStateContextProvider: React.FC<{
 	const hideHistory = useCallback(() => setShowHistory(false), [setShowHistory])
 	const hideAccount = useCallback(() => setShowAccount(false), [setShowAccount])
 	const hideAnnouncement = useCallback(() => setShowAnnouncement(false), [setShowAnnouncement])
+	const hideCardboard = useCallback(() => setShowCardboard(false), [setShowCardboard])
 
 	// Navigation functions
 	const navigateToMcp = useCallback(
@@ -137,41 +142,54 @@ export const ExtensionStateContextProvider: React.FC<{
 			setShowSettings(false)
 			setShowHistory(false)
 			setShowAccount(false)
+			setShowCardboard(false)
 			if (tab) {
 				setMcpTab(tab)
 			}
 			setShowMcp(true)
 		},
-		[setShowMcp, setMcpTab, setShowSettings, setShowHistory, setShowAccount],
+		[setShowMcp, setMcpTab, setShowSettings, setShowHistory, setShowAccount, setShowCardboard],
 	)
 
 	const navigateToSettings = useCallback(() => {
 		setShowHistory(false)
 		closeMcpView()
 		setShowAccount(false)
+		setShowCardboard(false)
 		setShowSettings(true)
-	}, [setShowSettings, setShowHistory, closeMcpView, setShowAccount])
+	}, [setShowSettings, setShowHistory, closeMcpView, setShowAccount, setShowCardboard])
 
 	const navigateToHistory = useCallback(() => {
 		setShowSettings(false)
 		closeMcpView()
 		setShowAccount(false)
+		setShowCardboard(false)
 		setShowHistory(true)
-	}, [setShowSettings, closeMcpView, setShowAccount, setShowHistory])
+	}, [setShowSettings, closeMcpView, setShowAccount, setShowHistory, setShowCardboard])
 
 	const navigateToAccount = useCallback(() => {
 		setShowSettings(false)
 		closeMcpView()
 		setShowHistory(false)
+		setShowCardboard(false)
 		setShowAccount(true)
-	}, [setShowSettings, closeMcpView, setShowHistory, setShowAccount])
+	}, [setShowSettings, closeMcpView, setShowHistory, setShowAccount, setShowCardboard])
 
 	const navigateToChat = useCallback(() => {
 		setShowSettings(false)
 		closeMcpView()
 		setShowHistory(false)
 		setShowAccount(false)
-	}, [setShowSettings, closeMcpView, setShowHistory, setShowAccount])
+		setShowCardboard(false)
+	}, [setShowSettings, closeMcpView, setShowHistory, setShowAccount, setShowCardboard])
+
+	const navigateToCardboard = useCallback(() => {
+		setShowSettings(false)
+		closeMcpView()
+		setShowHistory(false)
+		setShowAccount(false)
+		setShowCardboard(true)
+	}, [setShowSettings, closeMcpView, setShowHistory, setShowAccount, setShowCardboard])
 
 	const [state, setState] = useState<ExtensionState>({
 		version: "",
@@ -247,6 +265,7 @@ export const ExtensionStateContextProvider: React.FC<{
 	const chatButtonUnsubscribeRef = useRef<(() => void) | null>(null)
 	const accountButtonClickedSubscriptionRef = useRef<(() => void) | null>(null)
 	const settingsButtonClickedSubscriptionRef = useRef<(() => void) | null>(null)
+	const cardboardButtonClickedSubscriptionRef = useRef<(() => void) | null>(null)
 	const partialMessageUnsubscribeRef = useRef<(() => void) | null>(null)
 	const mcpMarketplaceUnsubscribeRef = useRef<(() => void) | null>(null)
 	const themeSubscriptionRef = useRef<(() => void) | null>(null)
@@ -442,6 +461,25 @@ export const ExtensionStateContextProvider: React.FC<{
 			},
 		)
 
+		// Set up cardboard button clicked subscription
+		cardboardButtonClickedSubscriptionRef.current = UiServiceClient.subscribeToCardboardButtonClicked(
+			WebviewProviderTypeRequest.create({
+				providerType: currentProviderType,
+			}),
+			{
+				onResponse: () => {
+					// When cardboard button is clicked, navigate to cardboard
+					navigateToCardboard()
+				},
+				onError: (error) => {
+					console.error("Error in cardboard button clicked subscription:", error)
+				},
+				onComplete: () => {
+					console.log("Cardboard button clicked subscription completed")
+				},
+			},
+		)
+
 		// Subscribe to partial message events
 		partialMessageUnsubscribeRef.current = UiServiceClient.subscribeToPartialMessage(EmptyRequest.create({}), {
 			onResponse: (protoMessage) => {
@@ -617,6 +655,10 @@ export const ExtensionStateContextProvider: React.FC<{
 				settingsButtonClickedSubscriptionRef.current()
 				settingsButtonClickedSubscriptionRef.current = null
 			}
+			if (cardboardButtonClickedSubscriptionRef.current) {
+				cardboardButtonClickedSubscriptionRef.current()
+				cardboardButtonClickedSubscriptionRef.current = null
+			}
 			if (partialMessageUnsubscribeRef.current) {
 				partialMessageUnsubscribeRef.current()
 				partialMessageUnsubscribeRef.current = null
@@ -683,6 +725,7 @@ export const ExtensionStateContextProvider: React.FC<{
 		showHistory,
 		showAccount,
 		showAnnouncement,
+		showCardboard,
 		globalClineRulesToggles: state.globalClineRulesToggles || {},
 		localClineRulesToggles: state.localClineRulesToggles || {},
 		localCursorRulesToggles: state.localCursorRulesToggles || {},
@@ -697,12 +740,14 @@ export const ExtensionStateContextProvider: React.FC<{
 		navigateToHistory,
 		navigateToAccount,
 		navigateToChat,
+		navigateToCardboard,
 
 		// Hide functions
 		hideSettings,
 		hideHistory,
 		hideAccount,
 		hideAnnouncement,
+		hideCardboard,
 		setApiConfiguration: (value) =>
 			setState((prevState) => ({
 				...prevState,

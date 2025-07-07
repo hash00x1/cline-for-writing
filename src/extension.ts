@@ -17,6 +17,7 @@ import { ErrorService } from "./services/error/ErrorService"
 import { initializeTestMode, cleanupTestMode } from "./services/test/TestMode"
 import { telemetryService } from "./services/posthog/telemetry/TelemetryService"
 import { sendSettingsButtonClickedEvent } from "./core/controller/ui/subscribeToSettingsButtonClicked"
+import { sendCardboardButtonClickedEvent } from "./core/controller/ui/subscribeToCardboardButtonClicked"
 import { v4 as uuidv4 } from "uuid"
 import { WebviewProviderType as WebviewProviderTypeEnum } from "@shared/proto/ui"
 import { WebviewProviderType } from "./shared/webview/types"
@@ -219,6 +220,17 @@ export async function activate(context: vscode.ExtensionContext) {
 					sendAccountButtonClickedEvent(instance.controller.id)
 				}
 			}
+		}),
+	)
+
+	context.subscriptions.push(
+		vscode.commands.registerCommand("cline.cardboardButtonClicked", (webview: any) => {
+			console.log("[DEBUG] cardboardButtonClicked", webview)
+
+			const isSidebar = !webview
+			const webviewType = isSidebar ? WebviewProviderTypeEnum.SIDEBAR : WebviewProviderTypeEnum.TAB
+
+			sendCardboardButtonClickedEvent(webviewType)
 		}),
 	)
 

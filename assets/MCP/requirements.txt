@@ -1,0 +1,16 @@
+# Apple M2 optimized dependencies for paragraph-level embeddings
+sentence-transformers==2.5.1
+torch>=2.0.0
+numpy>=1.24.0
+sqlite-vss>=0.1.2
+nltk>=3.8.0
+python-frontmatter>=1.0.0
+pathlib>=1.0.1
+asyncio>=3.4.3
+aiofiles>=23.0.0
+pydantic>=2.0.0
+watchdog>=3.0.0
+psutil>=5.9.0
+
+# MCP SDK
+mcp>=1.0.0

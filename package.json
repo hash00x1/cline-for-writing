@@ -43,7 +43,7 @@
 		"onLanguage:markdown",
 		"onLanguage:plaintext",
 		"onLanguage:latex",
-		"onLanguage:restructuredtext", 
+		"onLanguage:restructuredtext",
 		"onStartupFinished",
 		"workspaceContains:memory_bank/**",
 		"workspaceContains:*.md",
@@ -161,6 +161,11 @@
 				"icon": "$(settings-gear)"
 			},
 			{
+				"command": "cline.cardboardButtonClicked",
+				"title": "Cardboard",
+				"icon": "$(organization)"
+			},
+			{
 				"command": "cline.openInNewTab",
 				"title": "Open In New Tab",
 				"category": "Cline"
@@ -260,6 +265,11 @@
 				{
 					"command": "cline.settingsButtonClicked",
 					"group": "navigation@6",
+					"when": "view == claude-dev.SidebarProvider"
+				},
+				{
+					"command": "cline.cardboardButtonClicked",
+					"group": "navigation@7",
 					"when": "view == claude-dev.SidebarProvider"
 				}
 			],

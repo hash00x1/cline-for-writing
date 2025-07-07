@@ -14,6 +14,7 @@ import WorkspaceTracker from "@integrations/workspace/WorkspaceTracker"
 import { ClineAccountService } from "@services/account/ClineAccountService"
 import { McpHub } from "@services/mcp/McpHub"
 import { telemetryService } from "@/services/posthog/telemetry/TelemetryService"
+import { CardboardService } from "../services/CardboardService"
 import { ApiProvider, ModelInfo } from "@shared/api"
 import { ChatContent } from "@shared/ChatContent"
 import { ChatSettings } from "@shared/ChatSettings"
@@ -59,6 +60,7 @@ export class Controller {
 	workspaceTracker: WorkspaceTracker
 	mcpHub: McpHub
 	accountService: ClineAccountService
+	cardboardService: CardboardService
 	latestAnnouncementId = "may-22-2025_16:11:00" // update to some unique identifier when we add a new announcement
 
 	constructor(
@@ -83,6 +85,7 @@ export class Controller {
 				return apiConfiguration?.clineApiKey
 			},
 		)
+		this.cardboardService = new CardboardService()
 
 		// Clean up legacy checkpoints
 		cleanupLegacyCheckpoints(this.context.globalStorageUri.fsPath, this.outputChannel).catch((error) => {
@@ -105,8 +108,13 @@ export class Controller {
 		}
 		this.workspaceTracker.dispose()
 		this.mcpHub.dispose()
+		this.cardboardService.dispose()
 
 		console.error("Controller disposed")
+	}
+
+	private getWorkspaceRoot(): string | undefined {
+		return vscode.workspace.workspaceFolders?.map((folder) => folder.uri.fsPath).at(0)
 	}
 
 	// Auth methods
@@ -253,6 +261,177 @@ export class Controller {
 			case "grpc_request_cancel": {
 				if (message.grpc_request_cancel) {
 					await handleGrpcRequestCancel(this, message.grpc_request_cancel)
+				}
+				break
+			}
+
+			// Cardboard operations
+			case "initializeCardboard": {
+				const workspaceRoot = this.getWorkspaceRoot()
+				if (workspaceRoot) {
+					try {
+						const result = await this.cardboardService.initializeCardboard(workspaceRoot)
+						// Note: Since VSCode webview postMessage is fire-and-forget, we'll need to
+						// implement state management on the frontend or use a different pattern
+						// for now, we just initialize the backend
+					} catch (error) {
+						console.error("Failed to initialize cardboard:", error)
+					}
+				}
+				break
+			}
+			case "createCard": {
+				const workspaceRoot = this.getWorkspaceRoot()
+				if (workspaceRoot && message.card) {
+					try {
+						const card = await this.cardboardService.createCard(
+							workspaceRoot,
+							message.card.content,
+							message.card.position,
+							message.card.title,
+							message.card.tags || [],
+						)
+						// Send the created card back to the frontend
+						this.postMessageToWebview({
+							type: "cardCreated",
+							card: card,
+						})
+					} catch (error) {
+						console.error("Failed to create card:", error)
+					}
+				}
+				break
+			}
+			case "updateCard": {
+				const workspaceRoot = this.getWorkspaceRoot()
+				if (workspaceRoot && message.cardId && message.updates) {
+					try {
+						const updatedCard = await this.cardboardService.updateCard(workspaceRoot, message.cardId, message.updates)
+						// Send the updated card back to the frontend
+						this.postMessageToWebview({
+							type: "cardUpdated",
+							card: updatedCard,
+						})
+					} catch (error) {
+						console.error("Failed to update card:", error)
+					}
+				}
+				break
+			}
+			case "deleteCard": {
+				const workspaceRoot = this.getWorkspaceRoot()
+				if (workspaceRoot && message.cardId) {
+					try {
+						const success = await this.cardboardService.deleteCard(workspaceRoot, message.cardId)
+						if (success) {
+							// Send confirmation back to the frontend
+							this.postMessageToWebview({
+								type: "cardDeleted",
+								cardId: message.cardId,
+							})
+						}
+					} catch (error) {
+						console.error("Failed to delete card:", error)
+					}
+				}
+				break
+			}
+			case "createChunk": {
+				const workspaceRoot = this.getWorkspaceRoot()
+				if (workspaceRoot && message.chunkName) {
+					try {
+						await this.cardboardService.createChunk(
+							workspaceRoot,
+							message.chunkName,
+							message.cards || [], // cardIds
+						)
+					} catch (error) {
+						console.error("Failed to create chunk:", error)
+					}
+				}
+				break
+			}
+			case "updateChunk": {
+				const workspaceRoot = this.getWorkspaceRoot()
+				if (workspaceRoot && message.chunkId && message.updates) {
+					try {
+						await this.cardboardService.updateChunk(workspaceRoot, message.chunkId, message.updates)
+					} catch (error) {
+						console.error("Failed to update chunk:", error)
+					}
+				}
+				break
+			}
+			case "deleteChunk": {
+				const workspaceRoot = this.getWorkspaceRoot()
+				if (workspaceRoot && message.chunkId) {
+					try {
+						await this.cardboardService.deleteChunk(workspaceRoot, message.chunkId)
+					} catch (error) {
+						console.error("Failed to delete chunk:", error)
+					}
+				}
+				break
+			}
+			case "createView": {
+				const workspaceRoot = this.getWorkspaceRoot()
+				if (workspaceRoot && message.text) {
+					// using text field for view name
+					try {
+						await this.cardboardService.createView(
+							workspaceRoot,
+							message.text,
+							message.content, // description
+							message.cards || [], // chunkIds
+						)
+					} catch (error) {
+						console.error("Failed to create view:", error)
+					}
+				}
+				break
+			}
+			case "updateView": {
+				const workspaceRoot = this.getWorkspaceRoot()
+				if (workspaceRoot && message.viewId && message.updates) {
+					try {
+						await this.cardboardService.updateView(workspaceRoot, message.viewId, message.updates)
+					} catch (error) {
+						console.error("Failed to update view:", error)
+					}
+				}
+				break
+			}
+			case "deleteView": {
+				const workspaceRoot = this.getWorkspaceRoot()
+				if (workspaceRoot && message.viewId) {
+					try {
+						await this.cardboardService.deleteView(workspaceRoot, message.viewId)
+					} catch (error) {
+						console.error("Failed to delete view:", error)
+					}
+				}
+				break
+			}
+			case "importTextAsCards": {
+				const workspaceRoot = this.getWorkspaceRoot()
+				if (workspaceRoot && message.content && message.chunkName) {
+					try {
+						await this.cardboardService.importTextAsCards(workspaceRoot, message.content, message.chunkName)
+					} catch (error) {
+						console.error("Failed to import text as cards:", error)
+					}
+				}
+				break
+			}
+			case "exportViewAsText": {
+				const workspaceRoot = this.getWorkspaceRoot()
+				if (workspaceRoot && message.viewId) {
+					try {
+						const text = await this.cardboardService.exportViewAsText(workspaceRoot, message.viewId)
+						await this.cardboardService.createDocumentFromText(text)
+					} catch (error) {
+						console.error("Failed to export view as text:", error)
+					}
 				}
 				break
 			}

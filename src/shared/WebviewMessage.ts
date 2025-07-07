@@ -17,6 +17,19 @@ export interface WebviewMessage {
 		| "fetchUserCreditsData"
 		| "grpc_request"
 		| "grpc_request_cancel"
+		// Cardboard operations
+		| "initializeCardboard"
+		| "createCard"
+		| "updateCard"
+		| "deleteCard"
+		| "createChunk"
+		| "updateChunk"
+		| "deleteChunk"
+		| "createView"
+		| "updateView"
+		| "deleteView"
+		| "importTextAsCards"
+		| "exportViewAsText"
 
 	text?: string
 	disabled?: boolean
@@ -71,6 +84,20 @@ export interface WebviewMessage {
 	shellIntegrationTimeout?: number
 	terminalReuseEnabled?: boolean
 	defaultTerminalProfile?: string
+
+	// Cardboard-specific fields
+	workspaceRoot?: string
+	cardId?: string
+	chunkId?: string
+	viewId?: string
+	card?: any // WritingCard object
+	chunk?: any // ContentChunk object
+	view?: any // CardboardView object
+	cards?: any[] // WritingCard array
+	updates?: any // Partial updates object
+	content?: string
+	position?: any // CardPosition object
+	chunkName?: string
 }
 
 export type ClineAskResponse = "yesButtonClicked" | "noButtonClicked" | "messageResponse"
