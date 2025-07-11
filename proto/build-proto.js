@@ -89,16 +89,15 @@ async function main() {
 	tsProtoc(NICE_JS_OUT_DIR, protoFiles, ["outputServices=nice-grpc,useExactTypes=false", ...TS_PROTO_OPTIONS])
 
 	const descriptorFile = path.join(DESCRIPTOR_OUT_DIR, "descriptor_set.pb")
-	const descriptorProtocCommand = [
-		PROTOC,
-		`--proto_path="${SCRIPT_DIR}"`,
-		`--descriptor_set_out="${descriptorFile}"`,
+	const descriptorArgs = [
+		`--proto_path=${SCRIPT_DIR}`,
+		`--descriptor_set_out=${descriptorFile}`,
 		"--include_imports",
 		...protoFiles,
-	].join(" ")
+	]
 	try {
 		log_verbose(chalk.cyan("Generating descriptor set..."))
-		execSync(descriptorProtocCommand, { stdio: "inherit" })
+		execSync(`"${PROTOC}" ${descriptorArgs.map(arg => `"${arg}"`).join(" ")}`, { stdio: "inherit", shell: true })
 	} catch (error) {
 		console.error(chalk.red("Error generating descriptor set for proto file:"), error)
 		process.exit(1)
@@ -119,18 +118,19 @@ async function main() {
 
 async function tsProtoc(outDir, protoFiles, protoOptions) {
 	// Build the protoc command with proper path handling for cross-platform
-	const command = [
-		PROTOC,
-		`--proto_path="${SCRIPT_DIR}"`,
-		`--plugin=protoc-gen-ts_proto="${TS_PROTO_PLUGIN}"`,
-		`--ts_proto_out="${outDir}"`,
-		`--ts_proto_opt=${protoOptions.join(",")} `,
-		...protoFiles.map((s) => `"${s}"`),
-	].join(" ")
+	// Use array format for execSync to avoid shell escaping issues
+	const args = [
+		`--proto_path=${SCRIPT_DIR}`,
+		`--plugin=protoc-gen-ts_proto=${TS_PROTO_PLUGIN}`,
+		`--ts_proto_out=${outDir}`,
+		`--ts_proto_opt=${protoOptions.join(",")}`,
+		...protoFiles,
+	]
+	
 	try {
 		log_verbose(chalk.cyan(`Generating TypeScript code in ${outDir} for:\n${protoFiles.join("\n")}...`))
-		log_verbose(command)
-		execSync(command, { stdio: "inherit" })
+		log_verbose(`${PROTOC} ${args.join(" ")}`)
+		execSync(`"${PROTOC}" ${args.map(arg => `"${arg}"`).join(" ")}`, { stdio: "inherit", shell: true })
 	} catch (error) {
 		console.error(chalk.red("Error generating TypeScript for proto files:"), error)
 		process.exit(1)

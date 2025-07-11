@@ -2,6 +2,12 @@
 // for the documentation about the tasks.json format
 {
 	"version": "2.0.0",
+	"options": {
+		"env": {
+			"PATH": "/usr/local/Cellar/node@20/20.19.3/bin:${env:PATH}",
+			"NODE_PATH": "/usr/local/Cellar/node@20/20.19.3/lib/node_modules"
+		}
+	},
 	"tasks": [
 		{
 			"label": "compile-standalone",
