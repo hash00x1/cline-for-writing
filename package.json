@@ -329,6 +329,7 @@
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run package",
+		"package-no-types": "npm run protos && npm run build:webview && node esbuild.js --production",
 		"compile": "npm run check-types && npm run lint && node esbuild.js",
 		"compile-standalone": "npm run check-types && npm run lint && node esbuild.js --standalone",
 		"postcompile-standalone": "node scripts/package-standalone.mjs",
